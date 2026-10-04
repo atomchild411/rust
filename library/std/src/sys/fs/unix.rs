@@ -74,6 +74,8 @@ use crate::sys::weak::syscall;
 #[cfg(target_os = "android")]
 use crate::sys::weak::weak;
 use crate::sys::{AsInner, AsInnerMut, FromInner, IntoInner, cvt, cvt_r};
+// IRIX's canonicalize needs no null pointer.
+#[cfg_attr(target_os = "irix", allow(unused_imports))]
 use crate::{mem, ptr};
 
 // Used by rustc for checking the definitions of other function with the same symbol names
@@ -421,6 +423,7 @@ struct dirent64_min {
         target_os = "haiku",
         target_os = "vxworks",
         target_os = "aix",
+        target_os = "irix",
         target_os = "nto",
         target_os = "qnx",
         target_os = "vita",
@@ -945,6 +948,7 @@ impl Iterator for ReadDir {
                         target_os = "haiku",
                         target_os = "vxworks",
                         target_os = "aix",
+                        target_os = "irix",
                         target_os = "nto",
                         target_os = "qnx",
                         target_os = "vita",
@@ -1058,6 +1062,7 @@ impl DirEntry {
             target_os = "haiku",
             target_os = "vxworks",
             target_os = "aix",
+            target_os = "irix",
             target_os = "nto",
             target_os = "qnx",
             target_os = "vita",
@@ -1538,7 +1543,9 @@ impl File {
                 target_os = "espidf",
                 target_os = "horizon",
                 target_os = "nuttx",
-                target_os = "l4re"
+                target_os = "l4re",
+                // IRIX cannot set a descriptor's times (no futimens, no futimes).
+                target_os = "irix"
             ) => {
                 // Redox doesn't appear to support `UTIME_OMIT`.
                 // ESP-IDF and HorizonOS do not support `futimens` at all and the behavior for those OS is therefore
@@ -2059,6 +2066,20 @@ pub fn lstat(p: &CStr) -> io::Result<FileAttr> {
     Ok(FileAttr::from_stat64(stat))
 }
 
+#[cfg(target_os = "irix")]
+pub fn canonicalize(path: &CStr) -> io::Result<PathBuf> {
+    // IRIX's realpath() predates POSIX 2008: it fails with EINVAL unless given a buffer.
+    let mut buf = vec![0u8; libc::PATH_MAX as usize + 1];
+    let r = unsafe { libc::realpath(path.as_ptr(), buf.as_mut_ptr().cast()) };
+    if r.is_null() {
+        return Err(io::Error::last_os_error());
+    }
+    let len = unsafe { CStr::from_ptr(r).to_bytes().len() };
+    buf.truncate(len);
+    Ok(PathBuf::from(OsString::from_vec(buf)))
+}
+
+#[cfg(not(target_os = "irix"))]
 pub fn canonicalize(path: &CStr) -> io::Result<PathBuf> {
     let r = unsafe { libc::realpath(path.as_ptr(), ptr::null_mut()) };
     if r.is_null() {
@@ -2471,6 +2492,7 @@ mod remove_dir_impl {
         target_os = "haiku",
         target_os = "vxworks",
         target_os = "aix",
+        target_os = "irix",
     ))]
     fn is_dir(_ent: &DirEntry) -> Option<bool> {
         None
@@ -2482,6 +2504,7 @@ mod remove_dir_impl {
         target_os = "haiku",
         target_os = "vxworks",
         target_os = "aix",
+        target_os = "irix",
     )))]
     fn is_dir(ent: &DirEntry) -> Option<bool> {
         match ent.entry.d_type {
