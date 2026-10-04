@@ -578,10 +578,9 @@ impl Target {
                 check!(self.rustc_abi.is_none(), "`rustc_abi` is unused on MIPS");
                 check_matches!(
                     (&self.llvm_abiname, &self.cfg_abi),
-                    // No in-tree targets use "n32" but at least for now we let out-of-tree targets
-                    // experiment with that.
+                    // mips64-sgi-irix uses "n32" (target_abi "abin32"); out-of-tree targets may too.
                     (LlvmAbi::N64, CfgAbi::Abi64)
-                        | (LlvmAbi::N32, CfgAbi::Unspecified | CfgAbi::Other(_)),
+                        | (LlvmAbi::N32, CfgAbi::Unspecified | CfgAbi::AbiN32 | CfgAbi::Other(_)),
                     "invalid MIPS ABI name and `cfg(target_abi)` combination:\n\
                      ABI name: {}\n\
                      cfg(target_abi): {}",
