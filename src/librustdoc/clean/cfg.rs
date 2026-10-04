@@ -673,6 +673,7 @@ fn human_readable_target_os(os: Symbol) -> Option<&'static str> {
         Hyperlight => "Hyperlight",
         IOs => "iOS",
         Illumos => "illumos",
+        Irix => "IRIX",
         L4Re => "L4Re",
         Linux => "Linux",
         LynxOs178 => "LynxOS-178",
