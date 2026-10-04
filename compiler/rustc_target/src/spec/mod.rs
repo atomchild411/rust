@@ -1328,6 +1328,7 @@ supported_targets! {
     ("powerpc-unknown-linux-gnuspe", powerpc_unknown_linux_gnuspe),
     ("powerpc-unknown-linux-musl", powerpc_unknown_linux_musl),
     ("powerpc-unknown-linux-muslspe", powerpc_unknown_linux_muslspe),
+    ("mips64-sgi-irix", mips64_sgi_irix),
     ("powerpc64-ibm-aix", powerpc64_ibm_aix),
     ("powerpc64-unknown-linux-gnu", powerpc64_unknown_linux_gnu),
     ("powerpc64-unknown-linux-gnuelfv2", powerpc64_unknown_linux_gnuelfv2),
@@ -1863,6 +1864,7 @@ crate::target_spec_enum! {
         Hyperlight = "hyperlight",
         Illumos = "illumos",
         IOs = "ios",
+        Irix = "irix",
         L4Re = "l4re",
         Linux = "linux",
         LynxOs178 = "lynxos178",
@@ -1944,6 +1946,7 @@ crate::target_spec_enum! {
     /// See the `cfg_abi` field of [`TargetOptions`] for more details.
     pub enum CfgAbi {
         Abi64 = "abi64",
+        AbiN32 = "abin32",
         AbiV2 = "abiv2",
         AbiV2Hf = "abiv2hf",
         Eabi = "eabi",

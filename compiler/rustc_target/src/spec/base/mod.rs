@@ -15,6 +15,7 @@ pub(crate) mod hurd;
 pub(crate) mod hurd_gnu;
 pub(crate) mod hyperlight;
 pub(crate) mod illumos;
+pub(crate) mod irix;
 pub(crate) mod l4re;
 pub(crate) mod linux;
 pub(crate) mod linux_gnu;
